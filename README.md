@@ -1,0 +1,2 @@
+# analytics
+Matomo analytics plugin
