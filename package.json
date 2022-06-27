@@ -1,0 +1,27 @@
+{
+  "name": "@wpkamil/analytics",
+  "version": "1.0.11",
+  "description": "Analytics plugin for publishers.",
+  "license": "MIT",
+  "repository": "wepublish/analytics",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.d.ts",
+    "/dist"
+  ],
+  "keywords": [
+    "matomo",
+    "analytics",
+    "wepublish"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@jonkoops/matomo-tracker": "^0.7.0",
+    "typescript": "^4.7.4"
+  }
+}
