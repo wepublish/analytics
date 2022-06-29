@@ -9,10 +9,11 @@ const matomoPlugin = () => {
   return {
     name: "wp-matomo-analytics",
     page: () => {
-      if (typeof window !== "undefined") {
+      const findElement = () => {
         const peerElement =
           document.querySelector<HTMLElement>("#peer-element");
-        if (peerElement != null) {
+        if (peerElement !== null) {
+          clearInterval(check);
           const peerName = peerElement.dataset.peerName;
           const peerArticleId = peerElement.dataset.peerArticleId;
           if (!!(peerName && peerArticleId)) {
@@ -27,13 +28,20 @@ const matomoPlugin = () => {
             } as types.TrackParams);
           }
         }
-      }
+      };
+
+      const check = setInterval(findElement, 250);
+
+      setTimeout(() => {
+        clearInterval(check);
+      }, 2500);
     },
     track: () => {
-      if (typeof window !== "undefined") {
+      const findElement = () => {
         const peerElement =
           document.querySelector<HTMLElement>("#peer-element");
-        if (peerElement != null) {
+        if (peerElement !== null) {
+          clearInterval(check);
           const peerName = peerElement.dataset.peerName;
           const peerArticleId = peerElement.dataset.peerArticleId;
           if (!!(peerName && peerArticleId)) {
@@ -44,7 +52,13 @@ const matomoPlugin = () => {
             });
           }
         }
-      }
+      };
+
+      const check = setInterval(findElement, 250);
+
+      setTimeout(() => {
+        clearInterval(check);
+      }, 2500);
     },
   };
 };
