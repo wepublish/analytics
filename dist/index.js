@@ -1,12 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.matomoPlugin = exports.tracker = void 0;
-const matomo_tracker_1 = require("@jonkoops/matomo-tracker");
-const tracker = new matomo_tracker_1.default({
-    urlBase: "https://editordemowepublishmedia.matomo.cloud/",
-    siteId: 1,
-});
-exports.tracker = tracker;
+exports.matomoPlugin = void 0;
+const MatomoTracker = require("matomo-tracker");
+const matomo = new MatomoTracker(1, "https://wpexample2.matomo.cloud/matomo.php");
 const matomoPlugin = () => {
     return {
         name: "wp-matomo-analytics",
@@ -18,14 +14,11 @@ const matomoPlugin = () => {
                     const peerName = peerElement.dataset.peerName;
                     const peerArticleId = peerElement.dataset.peerArticleId;
                     if (!!(peerName && peerArticleId)) {
-                        tracker.trackPageView({
-                            href: window.location.href,
-                            data: [
-                                {
-                                    peerName,
-                                    peerArticleId,
-                                },
-                            ],
+                        matomo.track({
+                            url: window.location.href,
+                            action_name: "Peer article viewed.",
+                            dimension3: peerArticleId,
+                            dimension4: peerName,
                         });
                     }
                 }
@@ -35,27 +28,28 @@ const matomoPlugin = () => {
                 clearInterval(check);
             }, 2500);
         },
-        track: () => {
-            const findElement = () => {
-                const peerElement = document.querySelector("#peer-element");
-                if (peerElement !== null) {
-                    clearInterval(check);
-                    const peerName = peerElement.dataset.peerName;
-                    const peerArticleId = peerElement.dataset.peerArticleId;
-                    if (!!(peerName && peerArticleId)) {
-                        tracker.trackEvent({
-                            href: window.location.href,
-                            category: `Peer ${peerName} article visited`,
-                            action: `Some action ${peerArticleId}`,
-                        });
-                    }
-                }
-            };
-            const check = setInterval(findElement, 250);
-            setTimeout(() => {
-                clearInterval(check);
-            }, 2500);
-        },
+        // track: () => {
+        //   const findElement = () => {
+        //     const peerElement =
+        //       document.querySelector<HTMLElement>("#peer-element");
+        //     if (peerElement !== null) {
+        //       clearInterval(check);
+        //       const peerName = peerElement.dataset.peerName;
+        //       const peerArticleId = peerElement.dataset.peerArticleId;
+        //       if (!!(peerName && peerArticleId)) {
+        //         tracker.trackEvent({
+        //           href: window.location.href,
+        //           category: `Peer ${peerName} article visited`,
+        //           action: `Some action ${peerArticleId}`,
+        //         });
+        //       }
+        //     }
+        //   };
+        //   const check = setInterval(findElement, 250);
+        //   setTimeout(() => {
+        //     clearInterval(check);
+        //   }, 2500);
+        // },
     };
 };
 exports.matomoPlugin = matomoPlugin;
