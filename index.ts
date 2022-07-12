@@ -1,12 +1,14 @@
-import * as MatomoTracker from "matomo-tracker";
+import MatomoTracker from "@jonkoops/matomo-tracker";
 
-const matomo = new MatomoTracker(
-  1,
-  "https://wpexample2.matomo.cloud/matomo.php"
-);
+const matomo = new MatomoTracker({
+  siteId: 1,
+  urlBase: "https://wpexample2.matomo.cloud/matomo.php",
+});
 
 let pageInterval: number;
 let pageTimeout: number;
+let trackInterval: number;
+let trackTimeout: number;
 
 const matomoPlugin = () => {
   return {
@@ -28,11 +30,18 @@ const matomoPlugin = () => {
           const peerName = peerElement.dataset.peerName;
           const peerArticleId = peerElement.dataset.peerArticleId;
           if (!!(peerName && peerArticleId)) {
-            matomo.track({
-              url: window.location.href,
-              action_name: "Peer article viewed.",
-              dimension1: peerArticleId,
-              dimension2: peerName,
+            matomo.trackPageView({
+              href: window.location.href,
+              customDimensions: [
+                {
+                  id: 1,
+                  value: peerArticleId,
+                },
+                {
+                  id: 2,
+                  value: peerName,
+                },
+              ],
             });
           }
         }
@@ -44,30 +53,38 @@ const matomoPlugin = () => {
         clearInterval(pageInterval);
       }, 2500);
     },
-    // track: () => {
-    //   const findElement = () => {
-    //     const peerElement =
-    //       document.querySelector<HTMLElement>("#peer-element");
-    //     if (peerElement !== null) {
-    //       clearInterval(check);
-    //       const peerName = peerElement.dataset.peerName;
-    //       const peerArticleId = peerElement.dataset.peerArticleId;
-    //       if (!!(peerName && peerArticleId)) {
-    //         tracker.trackEvent({
-    //           href: window.location.href,
-    //           category: `Peer ${peerName} article visited`,
-    //           action: `Some action ${peerArticleId}`,
-    //         });
-    //       }
-    //     }
-    //   };
+    track: (params) => {
+      if (trackInterval) {
+        clearInterval(trackInterval);
+      }
 
-    //   const check = setInterval(findElement, 250);
+      if (trackTimeout) {
+        clearTimeout(trackTimeout);
+      }
 
-    //   setTimeout(() => {
-    //     clearInterval(check);
-    //   }, 2500);
-    // },
+      const findElement = () => {
+        const peerElement =
+          document.querySelector<HTMLElement>("#peer-element");
+        if (peerElement !== null) {
+          clearInterval(trackInterval);
+          const peerName = peerElement.dataset.peerName;
+          const peerArticleId = peerElement.dataset.peerArticleId;
+          if (!!(peerName && peerArticleId)) {
+            matomo.trackEvent({
+              category: "Page view",
+              action: "Peer article viewed",
+              ...params,
+            });
+          }
+        }
+      };
+
+      trackInterval = setInterval(findElement, 250);
+
+      trackTimeout = setTimeout(() => {
+        clearInterval(trackInterval);
+      }, 2500);
+    },
   };
 };
 
