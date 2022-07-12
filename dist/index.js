@@ -4,7 +4,7 @@ exports.matomoPlugin = void 0;
 const matomo_tracker_1 = require("@jonkoops/matomo-tracker");
 const matomo = new matomo_tracker_1.default({
     siteId: 1,
-    urlBase: "https://wpexample2.matomo.cloud/matomo.php",
+    urlBase: "https://wpexample2.matomo.cloud",
 });
 let pageInterval;
 let pageTimeout;
