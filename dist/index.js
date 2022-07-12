@@ -3,29 +3,37 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.matomoPlugin = void 0;
 const MatomoTracker = require("matomo-tracker");
 const matomo = new MatomoTracker(1, "https://wpexample2.matomo.cloud/matomo.php");
+let pageInterval;
+let pageTimeout;
 const matomoPlugin = () => {
     return {
         name: "wp-matomo-analytics",
         page: () => {
+            if (pageInterval) {
+                clearInterval(pageInterval);
+            }
+            if (pageTimeout) {
+                clearTimeout(pageTimeout);
+            }
             const findElement = () => {
                 const peerElement = document.querySelector("#peer-element");
                 if (peerElement !== null) {
-                    clearInterval(check);
+                    clearInterval(pageInterval);
                     const peerName = peerElement.dataset.peerName;
                     const peerArticleId = peerElement.dataset.peerArticleId;
                     if (!!(peerName && peerArticleId)) {
                         matomo.track({
                             url: window.location.href,
                             action_name: "Peer article viewed.",
-                            dimension3: peerArticleId,
-                            dimension4: peerName,
+                            dimension1: peerArticleId,
+                            dimension2: peerName,
                         });
                     }
                 }
             };
-            const check = setInterval(findElement, 250);
-            setTimeout(() => {
-                clearInterval(check);
+            pageInterval = setInterval(findElement, 250);
+            pageTimeout = setTimeout(() => {
+                clearInterval(pageInterval);
             }, 2500);
         },
         // track: () => {

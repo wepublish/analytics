@@ -5,32 +5,43 @@ const matomo = new MatomoTracker(
   "https://wpexample2.matomo.cloud/matomo.php"
 );
 
+let pageInterval: number;
+let pageTimeout: number;
+
 const matomoPlugin = () => {
   return {
     name: "wp-matomo-analytics",
     page: () => {
+      if (pageInterval) {
+        clearInterval(pageInterval);
+      }
+
+      if (pageTimeout) {
+        clearTimeout(pageTimeout);
+      }
+
       const findElement = () => {
         const peerElement =
           document.querySelector<HTMLElement>("#peer-element");
         if (peerElement !== null) {
-          clearInterval(check);
+          clearInterval(pageInterval);
           const peerName = peerElement.dataset.peerName;
           const peerArticleId = peerElement.dataset.peerArticleId;
           if (!!(peerName && peerArticleId)) {
             matomo.track({
               url: window.location.href,
               action_name: "Peer article viewed.",
-              dimension3: peerArticleId,
-              dimension4: peerName,
+              dimension1: peerArticleId,
+              dimension2: peerName,
             });
           }
         }
       };
 
-      const check = setInterval(findElement, 250);
+      pageInterval = setInterval(findElement, 250);
 
-      setTimeout(() => {
-        clearInterval(check);
+      pageTimeout = setTimeout(() => {
+        clearInterval(pageInterval);
       }, 2500);
     },
     // track: () => {
