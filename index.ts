@@ -2,7 +2,7 @@ import MatomoTracker from "@jonkoops/matomo-tracker";
 
 const matomo = new MatomoTracker({
   siteId: 1,
-  urlBase: "https://wpexample2.matomo.cloud",
+  urlBase: "https://matomo.wepublish.dev/",
 });
 
 let pageInterval: number;
