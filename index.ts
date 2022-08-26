@@ -29,7 +29,8 @@ const matomoPlugin = () => {
           clearInterval(pageInterval);
           const peerName = peerElement.dataset.peerName;
           const peerArticleId = peerElement.dataset.peerArticleId;
-          if (!!(peerName && peerArticleId)) {
+          const publisherName = peerElement.dataset.publisherName;
+          if (!!(peerName && peerArticleId && publisherName)) {
             matomo.trackPageView({
               href: window.location.href,
               customDimensions: [
@@ -40,6 +41,10 @@ const matomoPlugin = () => {
                 {
                   id: 2,
                   value: peerName,
+                },
+                {
+                  id: 3,
+                  value: publisherName,
                 },
               ],
             });
@@ -69,7 +74,8 @@ const matomoPlugin = () => {
           clearInterval(trackInterval);
           const peerName = peerElement.dataset.peerName;
           const peerArticleId = peerElement.dataset.peerArticleId;
-          if (!!(peerName && peerArticleId)) {
+          const publisherName = peerElement.dataset.publisherName;
+          if (!!(peerName && peerArticleId && publisherName)) {
             matomo.trackEvent({
               category: "Page view",
               action: "Peer article viewed",
