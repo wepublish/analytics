@@ -10,9 +10,9 @@ let pageTimeout: number;
 let trackInterval: number;
 let trackTimeout: number;
 
-const matomoPlugin = () => {
+const wepublish = () => {
   return {
-    name: "wp-matomo-analytics",
+    name: "wp-analytics",
     page: () => {
       if (pageInterval) {
         clearInterval(pageInterval);
@@ -94,4 +94,4 @@ const matomoPlugin = () => {
   };
 };
 
-export { matomoPlugin };
+export { wepublish };
