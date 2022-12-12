@@ -31,18 +31,6 @@ const matomoPlugin = () => {
   }
 }
 
-export function initTracking(appName: string) {
-  analytics = Analytics({
-    app: appName,
-    plugins: [matomoPlugin()]
-  })
-}
-
-export function trackPage() {
-  // call peer view
-  analytics.page(matomoPlugin())
-}
-
 /**
  * Searches for a html element with id 'peer-element'. If found, the method inits the tracking.
  */
@@ -148,4 +136,19 @@ function canSetCookie (): 1 | 0 {
   return testCookie === testCookieValue ? 1 : 0
 }
 
-export { matomoPlugin }
+/**
+ * Public interface. Exported members
+ */
+export function initWepublishAnalytics({appName}: {appName: string}) {
+  if (!appName) {
+    throw new Error('No app name given!')
+  }
+  analytics = Analytics({
+    app: appName,
+    plugins: [matomoPlugin()]
+  })
+}
+export function trackPage() {
+  // call peer view
+  analytics.page(matomoPlugin())
+}

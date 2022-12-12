@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.matomoPlugin = exports.trackPage = exports.initTracking = void 0;
+exports.trackPage = exports.initWepublishAnalytics = void 0;
 const MatomoTracker = require("matomo-tracker");
 const Cookies = require("js-cookie");
 const nanoid = require("nanoid");
@@ -30,19 +30,6 @@ const matomoPlugin = () => {
         }
     };
 };
-exports.matomoPlugin = matomoPlugin;
-function initTracking(appName) {
-    analytics = (0, analytics_1.default)({
-        app: appName,
-        plugins: [matomoPlugin()]
-    });
-}
-exports.initTracking = initTracking;
-function trackPage() {
-    // call peer view
-    analytics.page(matomoPlugin());
-}
-exports.trackPage = trackPage;
 /**
  * Searches for a html element with id 'peer-element'. If found, the method inits the tracking.
  */
@@ -139,3 +126,21 @@ function canSetCookie() {
     Cookies.remove(testCookieName);
     return testCookie === testCookieValue ? 1 : 0;
 }
+/**
+ * Public interface. Exported members
+ */
+function initWepublishAnalytics({ appName }) {
+    if (!appName) {
+        throw new Error('No app name given!');
+    }
+    analytics = (0, analytics_1.default)({
+        app: appName,
+        plugins: [matomoPlugin()]
+    });
+}
+exports.initWepublishAnalytics = initWepublishAnalytics;
+function trackPage() {
+    // call peer view
+    analytics.page(matomoPlugin());
+}
+exports.trackPage = trackPage;
