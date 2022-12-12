@@ -26,6 +26,9 @@ const matomoPlugin = () => {
   }
 }
 
+/**
+ * Searches for a html element with id 'peer-element'. If found, the method inits the tracking.
+ */
 function findElementAndTrack () {
   const peerElement =
     document.querySelector<HTMLElement>("#peer-element")
@@ -36,6 +39,10 @@ function findElementAndTrack () {
   track(peerElement)
 }
 
+/**
+ * Sends the tracking request to the matomo instance. Responsible to build the payload, which is sent along.
+ * @param peerElement
+ */
 function track (peerElement: HTMLElement) {
   const peerName = peerElement.dataset.peerName
   const peerArticleId = peerElement.dataset.peerArticleId
@@ -45,16 +52,24 @@ function track (peerElement: HTMLElement) {
     return
   }
 
-  let actionName
+  const apiv = 1
+  const h = new Date().getHours()
+  const m = new Date().getMinutes()
+  const s = new Date().getSeconds()
+  let action_name
   let url
   let urlref
   let _id
+  let cookie
+  let res
 
   try {
-    actionName = document.title
+    action_name = document.title
     url = window.location.href
     urlref = document.referrer
     _id = getUniqueVisitorId()
+    cookie = canSetCookie()
+    res = `${screen.width}x${screen.height}`
   } catch (e) {
     console.log(e)
   }
@@ -63,39 +78,25 @@ function track (peerElement: HTMLElement) {
     url,
     urlref,
     _id,
-    _idn: '',
-    _refts: '',
-    _ref: '',
-    r: '',
-    h: '',
-    m: '',
-    s: '',
-    send_image: '',
-    pdf: '',
-    qt: '',
-    realp: '',
-    wma: '',
-    fla: '',
-    java: '',
-    ag: '',
-    cookie: '',
-    res: '',
-    pf_net: '',
-    pf_srv: '',
-    pf_tfr: '',
-    pf_dm1: '',
-    pf_dm2: '',
-    pf_onl: '',
-    pv_id: '',
-    devicePixelRatio: '',
-    action_name: actionName,
-
+    apiv,
+    action_name,
+    h,
+    m,
+    s,
+    send_image: 0,
+    cookie,
+    res,
     'dimension1': peerArticleId,
     'dimension2': peerName,
     'dimension3': publisherName
   })
 }
 
+/**
+ * Tries to retrieve the unique client id from the cookies.
+ * If no such id is available as cookie, the function tries to generate a new id.
+ * If that new id cannot be stored as cookie, undefined is returned. In that case Matomo fallback gets a turn.
+ */
 function getUniqueVisitorId (): string | undefined {
   let trackerCookie = Cookies.get(cookieName)
   // if cookie doesn't exist yet, create one
@@ -110,9 +111,24 @@ function getUniqueVisitorId (): string | undefined {
   return trackerCookieObject.uniqueVisitorId
 }
 
+/**
+ * Generates a unique client id with nanoid and stores it as cookie.
+ */
 function createUniqueVisitorCookie (): void {
   const uniqueVisitorId = nanoid(30)
   Cookies.set(cookieName, JSON.stringify({uniqueVisitorId}))
+}
+
+/**
+ * Test function to check, whether cookies can be set or not.
+ */
+function canSetCookie (): 1 | 0 {
+  const testCookieName = 'wep-temp-test-cookie'
+  const testCookieValue = 'wep-temp-test-cookie-content'
+  Cookies.set(testCookieName, testCookieValue)
+  const testCookie = Cookies.get(testCookieName)
+  Cookies.remove(testCookieName)
+  return testCookie === testCookieValue ? 1 : 0
 }
 
 export { matomoPlugin }

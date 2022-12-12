@@ -3,8 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.matomoPlugin = void 0;
 const MatomoTracker = require("matomo-tracker");
 const Cookies = require("js-cookie");
-const nanoid_import = require("nanoid");
-const nanoid = nanoid_import;
+const nanoid = require("nanoid");
 const matomo = new MatomoTracker(1, 'https://matomo.wepublish.dev/matomo.php');
 let pageInterval;
 let pageTimeout;
@@ -42,15 +41,21 @@ function track(peerElement) {
     if (!peerElement || !peerArticleId || !publisherName) {
         return;
     }
-    let actionName;
+    const apiv = 1;
+    const h = new Date().getHours();
+    const m = new Date().getMinutes();
+    const s = new Date().getSeconds();
+    let action_name;
     let url;
     let urlref;
     let _id;
+    let cookie;
     try {
-        actionName = document.title;
+        action_name = document.title;
         url = window.location.href;
         urlref = document.referrer;
         _id = getUniqueVisitorId();
+        cookie = canSetCookie();
     }
     catch (e) {
         console.log(e);
@@ -59,22 +64,13 @@ function track(peerElement) {
         url,
         urlref,
         _id,
-        _idn: '',
-        _refts: '',
-        _ref: '',
-        r: '',
-        h: '',
-        m: '',
-        s: '',
-        send_image: '',
-        pdf: '',
-        qt: '',
-        realp: '',
-        wma: '',
-        fla: '',
-        java: '',
-        ag: '',
-        cookie: '',
+        apiv,
+        action_name,
+        h,
+        m,
+        s,
+        send_image: 0,
+        cookie,
         res: '',
         pf_net: '',
         pf_srv: '',
@@ -84,14 +80,12 @@ function track(peerElement) {
         pf_onl: '',
         pv_id: '',
         devicePixelRatio: '',
-        action_name: actionName,
         'dimension1': peerArticleId,
         'dimension2': peerName,
         'dimension3': publisherName
     });
 }
 function getUniqueVisitorId() {
-    console.log(Cookies);
     let trackerCookie = Cookies.get(cookieName);
     // if cookie doesn't exist yet, create one
     if (!trackerCookie) {
@@ -107,4 +101,12 @@ function getUniqueVisitorId() {
 function createUniqueVisitorCookie() {
     const uniqueVisitorId = nanoid(30);
     Cookies.set(cookieName, JSON.stringify({ uniqueVisitorId }));
+}
+function canSetCookie() {
+    const testCookieName = 'wep-temp-test-cookie';
+    const testCookieValue = 'wep-temp-test-cookie-content';
+    Cookies.set(testCookieName, testCookieValue);
+    const testCookie = Cookies.get(testCookieName);
+    Cookies.remove(testCookieName);
+    return testCookie === testCookieValue ? 1 : 0;
 }
