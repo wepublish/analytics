@@ -44,7 +44,8 @@ If you want to track page views and send peer name and peer article id, please m
 
 ##  Methods
 
-The package exposes two methods that can be called in order to call the tracker - `track` and `page`. Page method is meant to be called on page view, while track method should be called anywhere else - e.g. on successful request or inside some function. More methods are to be added in the future.
+The package exposes one method that can be called in order to call the tracker - `page()`. 
+Page method is meant to be called on page view. More methods are to be added in the future.
 
 ## References
 https://github.com/jonkoops/matomo-tracker/tree/main/packages/js
