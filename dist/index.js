@@ -1,13 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.matomoPlugin = void 0;
+exports.matomoPlugin = exports.trackPage = exports.initTracking = void 0;
 const MatomoTracker = require("matomo-tracker");
 const Cookies = require("js-cookie");
 const nanoid = require("nanoid");
+const analytics_1 = require("analytics");
 const matomo = new MatomoTracker(1, 'https://matomo.wepublish.dev/matomo.php');
+let analytics;
 let pageInterval;
 let pageTimeout;
 const cookieName = 'wepublish-matomo';
+/**
+ * Define analytics plugin
+ */
 const matomoPlugin = () => {
     return {
         name: "wp-matomo-analytics",
@@ -26,6 +31,21 @@ const matomoPlugin = () => {
     };
 };
 exports.matomoPlugin = matomoPlugin;
+function initTracking(appName) {
+    analytics = (0, analytics_1.default)({
+        app: appName,
+        plugins: [matomoPlugin()]
+    });
+}
+exports.initTracking = initTracking;
+function trackPage() {
+    // call peer view
+    analytics.page(matomoPlugin());
+}
+exports.trackPage = trackPage;
+/**
+ * Searches for a html element with id 'peer-element'. If found, the method inits the tracking.
+ */
 function findElementAndTrack() {
     const peerElement = document.querySelector("#peer-element");
     if (!peerElement) {
@@ -34,6 +54,10 @@ function findElementAndTrack() {
     clearInterval(pageInterval);
     track(peerElement);
 }
+/**
+ * Sends the tracking request to the matomo instance. Responsible to build the payload, which is sent along.
+ * @param peerElement
+ */
 function track(peerElement) {
     const peerName = peerElement.dataset.peerName;
     const peerArticleId = peerElement.dataset.peerArticleId;
@@ -50,12 +74,14 @@ function track(peerElement) {
     let urlref;
     let _id;
     let cookie;
+    let res;
     try {
         action_name = document.title;
         url = window.location.href;
         urlref = document.referrer;
         _id = getUniqueVisitorId();
         cookie = canSetCookie();
+        res = `${screen.width}x${screen.height}`;
     }
     catch (e) {
         console.log(e);
@@ -71,20 +97,17 @@ function track(peerElement) {
         s,
         send_image: 0,
         cookie,
-        res: '',
-        pf_net: '',
-        pf_srv: '',
-        pf_tfr: '',
-        pf_dm1: '',
-        pf_dm2: '',
-        pf_onl: '',
-        pv_id: '',
-        devicePixelRatio: '',
+        res,
         'dimension1': peerArticleId,
         'dimension2': peerName,
         'dimension3': publisherName
     });
 }
+/**
+ * Tries to retrieve the unique client id from the cookies.
+ * If no such id is available as cookie, the function tries to generate a new id.
+ * If that new id cannot be stored as cookie, undefined is returned. In that case Matomo fallback gets a turn.
+ */
 function getUniqueVisitorId() {
     let trackerCookie = Cookies.get(cookieName);
     // if cookie doesn't exist yet, create one
@@ -98,10 +121,16 @@ function getUniqueVisitorId() {
     const trackerCookieObject = JSON.parse(trackerCookie);
     return trackerCookieObject.uniqueVisitorId;
 }
+/**
+ * Generates a unique client id with nanoid and stores it as cookie.
+ */
 function createUniqueVisitorCookie() {
     const uniqueVisitorId = nanoid(30);
     Cookies.set(cookieName, JSON.stringify({ uniqueVisitorId }));
 }
+/**
+ * Test function to check, whether cookies can be set or not.
+ */
 function canSetCookie() {
     const testCookieName = 'wep-temp-test-cookie';
     const testCookieValue = 'wep-temp-test-cookie-content';

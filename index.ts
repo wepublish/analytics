@@ -1,12 +1,17 @@
 import * as MatomoTracker from 'matomo-tracker'
 import * as Cookies from 'js-cookie'
 import nanoid = require('nanoid')
+import Analytics from 'analytics'
 
 const matomo = new MatomoTracker(1, 'https://matomo.wepublish.dev/matomo.php')
+let analytics
 let pageInterval: NodeJS.Timer | number
 let pageTimeout: NodeJS.Timeout | number
 const cookieName: string = 'wepublish-matomo'
 
+/**
+ * Define analytics plugin
+ */
 const matomoPlugin = () => {
   return {
     name: "wp-matomo-analytics",
@@ -24,6 +29,18 @@ const matomoPlugin = () => {
       }, 2500)
     }
   }
+}
+
+export function initTracking(appName: string) {
+  analytics = Analytics({
+    app: appName,
+    plugins: [matomoPlugin()]
+  })
+}
+
+export function trackPage() {
+  // call peer view
+  analytics.page(matomoPlugin())
 }
 
 /**
