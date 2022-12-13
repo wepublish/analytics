@@ -21,7 +21,14 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@jonkoops/matomo-tracker": "^0.7.0",
+    "@types/js-cookie": "^3.0.2",
+    "analytics": "^0.8.1",
+    "js-cookie": "^3.0.1",
+    "matomo-tracker": "^2.2.4",
+    "nanoid": "^2.1.11",
     "typescript": "^4.7.4"
+  },
+  "devDependencies": {
+    "@types/nanoid": "^2.1.0"
   }
 }

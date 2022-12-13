@@ -1,6 +1,7 @@
-declare const matomoPlugin: () => {
-    name: string;
-    page: () => void;
-    track: (params: any) => void;
-};
-export { matomoPlugin };
+/**
+ * Public interface. Exported members
+ */
+export declare function initWepublishAnalytics({ appName }: {
+    appName: string;
+}): void;
+export declare function trackPage(): void;
