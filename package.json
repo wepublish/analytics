@@ -1,6 +1,6 @@
 {
   "name": "@wepublish/analytics",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.3",
   "description": "Analytics plugin for publishers.",
   "license": "MIT",
   "repository": "wepublish/analytics",
